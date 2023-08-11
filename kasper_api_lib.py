@@ -1,4 +1,6 @@
 import requests
+import hashlib
+
 
 class API():
     """Работа с API Kaspersky Threat Intelligence Portal\n
@@ -104,3 +106,25 @@ class API():
                 "x-api-key": self._apikey
         }
         return requests.post('https://opentip.kaspersky.com/api/v1/getresult/file?request='+hash, headers=_headers)
+    
+
+def hashs(full_path_file:str):
+    """Вернет хеши MD5, SHA1, SHA256"""
+    BUF_SIZE = 65536 
+
+    md5 = hashlib.md5()
+    sha256 = hashlib.sha256()
+    sha1 = hashlib.sha1()
+
+    with open(full_path_file, 'rb') as f:
+        while True:
+            data = f.read(BUF_SIZE)
+            if not data:
+                break
+            md5.update(data)
+            sha1.update(data)
+            sha256.update(data)
+    return {"MD5": format(md5.hexdigest().upper()),
+            "SHA1": format(sha1.hexdigest().upper()),
+            "SHA256": format(sha256.hexdigest().upper())
+    }
